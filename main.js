@@ -1,6 +1,5 @@
 let buffer = [];
 const maxBufferLength = 1000; //? this might be mental
-const epilepsyDeltaThershold = 36.75; //! prone to be changed
 const kernelSize = 20; //? Like in the blur algorithms
 
 let sendEnable = false;
