@@ -118,12 +118,13 @@ s.on("connection", function (ws, req) {
 
   ws.on("message", function (message) {
     console.log("Received: " + message);
-    if (message !== 'connection succeeded')
+    if (message !== 'connection succeeded') {
       s.clients.forEach(function (client) {
         //broadcast incoming message to all clients (s.clients)
         if (client != ws && client.readyState) {
           //except to the same client (ws) that sent this message
           let parsedMessage = JSON.parse(message);
+          console.log(parsedMessage);
 
           if (sendEnable) {
             console.log('Sending packet');
@@ -143,6 +144,7 @@ s.on("connection", function (ws, req) {
             buffer.shift();
         }
       });
+    }
   });
 
   ws.on("close", function () {
