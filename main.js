@@ -117,27 +117,28 @@ s.on("connection", function (ws, req) {
 
   ws.on("message", function (message) {
     console.log("Received: " + message);
-    s.clients.forEach(function (client) {
-      //broadcast incoming message to all clients (s.clients)
-      if (client != ws && client.readyState) {
-        //except to the same client (ws) that sent this message
-        let parsedMessage = JSON.parse(message);
+    if (message !== 'connection succeeded')
+      s.clients.forEach(function (client) {
+        //broadcast incoming message to all clients (s.clients)
+        if (client != ws && client.readyState) {
+          //except to the same client (ws) that sent this message
+          let parsedMessage = JSON.parse(message);
 
-        if (sendEnable) {
-          sendEnable = false;
-          client.send(JSON.stringify({
-            intensity: parsedMessage[0].intensity,
-            epilepsy: Boolean(epilepsyEstimates.reduce((accumulator, currentValue) => {
-                return currentValue ? accumulator + 1 : accumulator;
-              }, 0) > (epilepsyEstimates.length / 2)),
-          }));
+          if (sendEnable) {
+            sendEnable = false;
+            client.send(JSON.stringify({
+              intensity: parsedMessage[0].intensity,
+              epilepsy: Boolean(epilepsyEstimates.reduce((accumulator, currentValue) => {
+                  return currentValue ? accumulator + 1 : accumulator;
+                }, 0) > (epilepsyEstimates.length / 2)),
+            }));
+          }
+
+          buffer.push(parsedMessage);
+          if (buffer.length > maxBufferLength)
+            buffer.shift();
         }
-
-        buffer.push(parsedMessage);
-        if (buffer.length > maxBufferLength)
-          buffer.shift();
-      }
-    });
+      });
   });
 
   ws.on("close", function () {
