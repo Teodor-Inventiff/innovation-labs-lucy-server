@@ -8,6 +8,7 @@ const io = require('socket.io')(http, {
     methods: ["GET", "POST", "PUT"],
     credentials: false,
     withCredentials: false,
+    allowedHeaders: ['Access-Control-Allow-Origin'],
   }
 });
 
