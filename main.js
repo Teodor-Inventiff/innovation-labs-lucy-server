@@ -93,7 +93,7 @@ let epilepsyEstimates = []
 setInterval(() => {
   console.log('update epilepsy estimate');
   epilepsyEstimates.push(epilepsyEstimate());
-});
+}, 250);
 
 var bodyParser = require("body-parser");
 const express = require("express"); //express framework to have a higher level of methods
