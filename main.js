@@ -6,6 +6,7 @@ const kernelSize = 20; //? Like in the blur algorithms
 let sendEnable = false;
 let sendInterval = 750;
 setInterval(() => {
+  console.log('updating send enable');
   sendEnable = true;
 }, sendInterval);
 
@@ -90,6 +91,7 @@ const epilepsyEstimate = () => {
 
 let epilepsyEstimates = []
 setInterval(() => {
+  console.log('update epilepsy estimate');
   epilepsyEstimates.push(epilepsyEstimate());
 });
 
@@ -125,6 +127,7 @@ s.on("connection", function (ws, req) {
           let parsedMessage = JSON.parse(message);
 
           if (sendEnable) {
+            console.log('Sending packet');
             sendEnable = false;
             client.send(JSON.stringify({
               intensity: parsedMessage[0].intensity,
@@ -132,6 +135,8 @@ s.on("connection", function (ws, req) {
                   return currentValue ? accumulator + 1 : accumulator;
                 }, 0) > (epilepsyEstimates.length / 2)),
             }));
+            console.log('Epilepsy estimates', epilepsyEstimates);
+            epilepsyEstimates = [];
           }
 
           buffer.push(parsedMessage);
