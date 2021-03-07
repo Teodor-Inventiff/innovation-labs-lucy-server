@@ -2,12 +2,7 @@ let buffer = [];
 const maxBufferLength = 1000; //? this might be mental
 const kernelSize = 20; //? Like in the blur algorithms
 
-let sendEnable = false;
 let sendInterval = 750;
-setInterval(() => {
-  console.log('updating send enable');
-  sendEnable = true;
-}, sendInterval);
 
 const epilepsyEstimate = () => {
   let epilepsyWarnings = 0;
@@ -88,11 +83,11 @@ const epilepsyEstimate = () => {
   return false;
 }
 
-let epilepsyEstimates = []
-setInterval(() => {
-  console.log('update epilepsy estimate');
-  epilepsyEstimates.push(epilepsyEstimate());
-}, 250);
+// let epilepsyEstimates = []
+// setInterval(() => {
+//   console.log('update epilepsy estimate');
+//   epilepsyEstimates.push(epilepsyEstimate());
+// }, 250);
 
 var bodyParser = require("body-parser");
 const express = require("express"); //express framework to have a higher level of methods
@@ -126,18 +121,16 @@ s.on("connection", function (ws, req) {
           let parsedMessage = JSON.parse(message);
           console.log(parsedMessage);
 
-          if (sendEnable) {
-            console.log('Sending packet');
-            sendEnable = false;
-            client.send(JSON.stringify({
-              intensity: parsedMessage[0].intensity,
-              epilepsy: Boolean(epilepsyEstimates.reduce((accumulator, currentValue) => {
-                  return currentValue ? accumulator + 1 : accumulator;
-                }, 0) > (epilepsyEstimates.length / 2)),
-            }));
-            console.log('Epilepsy estimates', epilepsyEstimates);
-            epilepsyEstimates = [];
-          }
+          console.log('Sending packet');
+          client.send(JSON.stringify({
+            intensity: parsedMessage[0].intensity,
+            // epilepsy: Boolean(epilepsyEstimates.reduce((accumulator, currentValue) => {
+            //     return currentValue ? accumulator + 1 : accumulator;
+            //   }, 0) > (epilepsyEstimates.length / 2)),
+            epilepsy: epilepsyEstimate(),
+          }));
+          console.log('Epilepsy estimates', epilepsyEstimates);
+          // epilepsyEstimates = [];
 
           buffer.push(parsedMessage);
           if (buffer.length > maxBufferLength)
